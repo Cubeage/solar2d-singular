@@ -38,6 +38,8 @@ import com.singular.sdk.SingularAdData;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONObject;
+
 /**
  * Solar2D plugin entry point for Singular Attribution SDK 12.x
  */
@@ -188,7 +190,7 @@ public class LuaLoader implements JavaFunction, CoronaRuntimeListener {
                         if (args.isEmpty()) {
                             Singular.event(name);
                         } else {
-                            Singular.eventWithArgs(name, (HashMap<String, Object>) args);
+                            Singular.eventJSON(name, new JSONObject(args));
                         }
                         Log.d(TAG, "Singular event tracked: " + name);
                     } catch (Exception e) {
