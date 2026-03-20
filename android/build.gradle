@@ -1,0 +1,30 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    namespace 'plugin.singular'
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 21
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+}
+
+dependencies {
+    // Singular Attribution SDK
+    implementation 'com.singular.sdk:singular_sdk:12.6.3'
+    // Corona SDK — compileOnly; provided by Solar2D at runtime
+    compileOnly fileTree(dir: 'libs', include: ['*.jar'])
+}
