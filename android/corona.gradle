@@ -1,0 +1,12 @@
+// corona.gradle — injected by CoronaBuilder into the end-user app's Gradle build.
+// Pulls Singular Attribution SDK at app-build time.
+
+repositories {
+    google()
+    mavenCentral()
+    maven { url 'https://maven.singular.net/' }
+}
+
+dependencies {
+    implementation 'com.singular.sdk:singular_sdk:12.6.3'
+}
