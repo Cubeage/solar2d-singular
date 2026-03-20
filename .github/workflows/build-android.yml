@@ -1,0 +1,76 @@
+name: Build Android
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Fetch Solar2D Corona classes (from CoronaCards AAR)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ASSET_URL=$(gh api repos/coronalabs/corona/releases/latest \
+            --jq '.assets[] | select(.name | startswith("CoronaCards-Android")) | .browser_download_url')
+          echo "Downloading: $ASSET_URL"
+          curl -L "$ASSET_URL" -o CoronaCards-Android.zip
+          unzip -o CoronaCards-Android.zip -d coronacards_android
+          AAR=$(find coronacards_android -name "*.aar" | head -1)
+          echo "Found AAR: $AAR"
+          mkdir -p aar_contents
+          unzip -o "$AAR" -d aar_contents
+          mkdir -p android/libs
+          if [ -f aar_contents/classes.jar ]; then
+            cp aar_contents/classes.jar android/libs/Corona.jar
+            echo "Copied classes.jar -> android/libs/Corona.jar"
+          else
+            echo "ERROR: classes.jar not found in AAR"
+            exit 1
+          fi
+          ls -la android/libs/
+
+      - name: Make gradlew executable
+        run: chmod +x android/gradlew
+
+      - name: Build AAR
+        run: |
+          cd android
+          ./gradlew assembleRelease --stacktrace
+
+      - name: Locate AAR
+        id: aar
+        run: |
+          AAR=$(find android/build -name "*-release.aar" | head -1)
+          echo "aar_path=$AAR" >> $GITHUB_OUTPUT
+          echo "Found AAR: $AAR"
+
+      - name: Package android.tgz
+        run: |
+          mkdir -p package_android
+          cp "${{ steps.aar.outputs.aar_path }}" package_android/plugin-release.aar
+          cp android/corona.gradle package_android/corona.gradle
+          cp metadata.lua package_android/metadata.lua
+          cd package_android
+          tar czf ../android.tgz .
+          echo "android.tgz contents:"
+          tar tzf ../android.tgz
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-plugin
+          path: android.tgz
