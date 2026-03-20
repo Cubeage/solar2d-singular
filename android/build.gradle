@@ -24,7 +24,7 @@ android {
 
 dependencies {
     // Singular Attribution SDK
-    implementation 'com.singular.sdk:singular_sdk:12.6.3'
+    implementation 'com.singular.sdk:singular_sdk:12.10.0'
     // Corona SDK — compileOnly; provided by Solar2D at runtime
     compileOnly fileTree(dir: 'libs', include: ['*.jar'])
 }
