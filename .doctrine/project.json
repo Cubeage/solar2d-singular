@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "repo": "Cubeage/solar2d-singular",
+    "name": "Cubeage Solar2D Singular Plugin",
+    "lifecycle": "production",
+    "layer": "foundation",
+    "summary": "Self-hosted Solar2D native plugin for the Singular attribution SDK, owning Android plugin source, Solar2D metadata, and GitHub Release package artifacts consumed by games.",
+    "goals": [
+      "Maintain the Solar2D plugin.singular integration for Singular attribution and event reporting.",
+      "Package Android release artifacts that Solar2D apps can consume from GitHub Releases.",
+      "Keep Singular SDK versioning, Solar2D metadata, and platform support limits explicit."
+    ],
+    "nonGoals": [
+      "Do not own game-specific attribution policy, marketing analytics decisions, or app runtime behavior.",
+      "Do not own the upstream Singular SDK or Solar2D runtime.",
+      "Do not own central CI runner, enterprise release bot, or platform preview behavior."
+    ]
+  },
+  "boundaries": {
+    "owns": [
+      {
+        "name": "solar2d-singular-lua-api",
+        "description": "The plugin.singular Lua-facing API and event contract documented for Solar2D apps."
+      },
+      {
+        "name": "solar2d-singular-android-code",
+        "description": "Android native plugin source that bridges Solar2D to Singular SDK behavior."
+      },
+      {
+        "name": "solar2d-singular-release-artifact",
+        "description": "GitHub Release package artifact android.tgz consumed by Solar2D build settings."
+      }
+    ],
+    "doesNotOwn": [
+      "Game-specific attribution policy, marketing analytics decisions, monetization behavior, or app runtime behavior.",
+      "Upstream Singular SDK releases, Solar2D runtime behavior, or app-store submission policy.",
+      "Central Sylphx preview platform, central CI runner capacity, branch protection policy, or enterprise release bot behavior."
+    ],
+    "publicSurfaces": [
+      {
+        "type": "api",
+        "name": "Solar2D Singular Lua API",
+        "location": "README.md"
+      },
+      {
+        "type": "package-export",
+        "name": "Android plugin package",
+        "location": ".github/workflows/release.yml:android.tgz"
+      },
+      {
+        "type": "manifest",
+        "name": "Solar2D plugin metadata",
+        "location": "metadata.lua"
+      },
+      {
+        "type": "workflow",
+        "name": "Package release workflow",
+        "location": ".github/workflows/release.yml"
+      }
+    ],
+    "allowedDependencies": [
+      {
+        "repo": "coronalabs/corona",
+        "surface": "Solar2D SDK release assets and runtime headers",
+        "direction": "external"
+      }
+    ],
+    "forbiddenCouplings": [
+      "Do not add game-specific attribution policy, monetization behavior, or analytics decisions to the reusable plugin.",
+      "Do not consume private app internals from plugin code.",
+      "Do not treat source revert as sufficient recovery after release artifacts have been published.",
+      "Do not encode central release-bot, runner-capacity, secret-management, or branch-protection policy as plugin behavior."
+    ]
+  },
+  "documentation": {
+    "adr": {
+      "path": "docs/adr/",
+      "status": "planned"
+    },
+    "specs": {
+      "path": "README.md",
+      "status": "present"
+    },
+    "catalog": {
+      "path": ".doctrine/project.json",
+      "status": "present"
+    },
+    "runbooks": {
+      "path": "README.md",
+      "status": "present"
+    },
+    "generatedReferences": {
+      "path": "metadata.lua",
+      "status": "present"
+    }
+  },
+  "delivery": {
+    "ciModel": "legacy-ci",
+    "requiredContexts": [],
+    "deployPath": "Release artifacts are built by .github/workflows/build-android.yml and published by .github/workflows/release.yml on v* tag pushes. No required PR status context is currently configured in branch protection.",
+    "productionProof": "Release changes require Android build artifacts, package smoke evidence, GitHub Release asset readback, and consumer compatibility notes for affected apps. Manifest-only changes are proven by the doctrine project-control audit.",
+    "recoveryClass": "forward-fix-only",
+    "packageRelease": {
+      "publishesPackages": true,
+      "ecosystems": [
+        "github-release",
+        "solar2d-plugin"
+      ],
+      "releaseIntent": "Current state is a v* tag-triggered release workflow; dedicated release-intent PR is not yet adopted.",
+      "versionPr": "Not currently implemented; future path should use a bot-owned version or release PR before tag publication.",
+      "publisher": ".github/workflows/release.yml currently publishes with repository workflow permissions; future path should use a dedicated least-privilege release GitHub App or bot.",
+      "requiredContexts": [
+        "build-android",
+        "release"
+      ],
+      "publishProof": "GitHub Release readback for android.tgz plus package smoke evidence."
+    }
+  },
+  "adoption": {
+    "status": "baseline",
+    "gaps": [
+      {
+        "id": "no-required-pr-contexts",
+        "description": "Branch protection has no required PR status contexts for plugin or package changes.",
+        "owner": "Cubeage/solar2d-singular",
+        "target": "Future CI adoption issue"
+      },
+      {
+        "id": "release-bot-not-adopted",
+        "description": "Package release is tag-triggered and currently lacks a dedicated release GitHub App or bot-owned version PR.",
+        "owner": "Cubeage/solar2d-singular",
+        "target": "ADR-59 release control-plane adoption"
+      },
+      {
+        "id": "central-admission-not-adopted",
+        "description": "Repository has not adopted central ADR-29 stable admission fan-in contexts.",
+        "owner": "SylphxAI/doctrine#61",
+        "target": "Central CI runner and admission control plane"
+      }
+    ]
+  }
+}
