@@ -1,5 +1,7 @@
 # solar2d-singular
 
+<p align="center"><img src="https://mark.sylphx.com/api/v1/mark/hero.svg?type=aurora&color=0:A02028,50:E03840,100:1A1A1A&text=solar2d-singular&desc=Solar2D%20plugin%20for%20Singular%20attribution" alt="solar2d-singular" /></p>
+
 Solar2D plugin for [Singular](https://www.singular.net/) Attribution SDK.
 
 ## Installation
